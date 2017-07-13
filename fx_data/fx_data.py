@@ -8,7 +8,7 @@ basepath = os.path.dirname(__file__)
 data_dir = os.path.abspath(os.path.join(basepath, 'data'))
 
 
-def get(provider, year, month, day=None):
+def get(provider, year, month, day=None, time_group=None):
     if day:
         day = "-{0}".format(day)
     else:
@@ -41,6 +41,9 @@ def get(provider, year, month, day=None):
     else:
         raise Exception
 
-    price_data.dropna(subset=['price'], inplace=True)
+    if time_group:
+        price_data = price_data.groupby(pd.TimeGrouper(freq=time_group)).mean()
+
+    price_data = price_data.dropna(subset=['price'])
 
     return price_data

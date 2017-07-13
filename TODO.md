@@ -5,6 +5,5 @@
 - How to measure volatility
 - Verify again with small amount of data to be sure it works
 - Vectorise `simulate_trades`
-- Delete weekends from data
-- Reduce rows to 5 mins, rerun across all months
 - Use EMA
+- Update example strategy1 to strategy3
