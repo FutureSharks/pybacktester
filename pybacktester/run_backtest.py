@@ -7,13 +7,16 @@ from .generate_trades import generate_trades
 from .simulate_trades import simulate_trades
 
 
-def run_backtest(price_data, portfolio_value, position_percentage, stop_pips):
+def run_backtest(price_data, portfolio_value, position_percentage, stop_pips, spread_pips):
     '''
     Takes price data with position column, runs backtest and returns stats and
     results
     '''
     begin_portfolio_value = portfolio_value
-    trades = generate_trades(price_data, stop_pips)
+    trades = generate_trades(price_data, stop_pips=stop_pips, spread_pips=spread_pips)
+    if len(trades) == 0:
+        print('no trades generated')
+        return (None, None)
     trades = simulate_trades(trades, portfolio_value, position_percentage)
 
     try:

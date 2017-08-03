@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 
 
-def generate_trades(price_data, stop_pips=None):
+def generate_trades(price_data, spread_pips, stop_pips):
     '''
     Takes price_data with poition column and returns a list of trades with
     enter/exit dates and enter/exit prices
@@ -20,9 +20,15 @@ def generate_trades(price_data, stop_pips=None):
     # Create trades DataFrame
     trades = pd.DataFrame({
             'enter_date' : price_data.reset_index().groupby('position_group').date.first(),
-            'enter_price' : price_data.reset_index().groupby('position_group')['price'].first(),
+            'enter_price' : price_data.reset_index().groupby('position_group')['price'].first() + (
+                price_data.groupby('position_group').position.first() * (0.0001 * (spread_pips / 2))
+            ),
+            'in_trade_price_min' : price_data.reset_index().groupby('position_group')['price'].min(),
+            'in_trade_price_max' : price_data.reset_index().groupby('position_group')['price'].max(),
             'exit_date' : price_data.reset_index().groupby('position_group_day_after').date.last(),
-            'exit_price' : price_data.reset_index().groupby('position_group_day_after')['price'].last(),
+            'exit_price' : price_data.reset_index().groupby('position_group_day_after')['price'].last() - (
+                price_data.groupby('position_group').position.first() * (0.0001 * (spread_pips / 2))
+            ),
             'position_length' : price_data.groupby('position_group').size(),
             'position' : price_data.groupby('position_group').position.first()
         }).reset_index(drop=True)
@@ -30,49 +36,43 @@ def generate_trades(price_data, stop_pips=None):
     # Remove trades with neutral position
     trades = trades[trades.position != 0].reset_index(drop=True)
 
+    # Calculate stop price from stop_pips
+    trades['stop_price'] = np.where(
+        trades['position'] == 1,
+        trades['enter_price'] - (0.0001 * stop_pips),
+        trades['enter_price'] + (0.0001 * stop_pips)
+    )
+
+    # Was the stop triggered or not
+    trades['stop_triggered'] = np.where(
+        trades['position'] == 1,
+        (trades['in_trade_price_min'] < trades['stop_price']) | (trades['exit_price'] < trades['stop_price']),
+        (trades['in_trade_price_max'] > trades['stop_price']) | (trades['exit_price'] > trades['stop_price'])
+    )
+
+    # Recaulculate exit price if the stop was triggered
+    trades['exit_price'] = np.where(
+        trades['stop_triggered'] == True,
+        trades['stop_price'],
+        trades['exit_price']
+    )
+
+    # Was each trade profitable
     trades['profitable'] = np.where(
-        trades['position'] == 1, trades['exit_price'] > trades['enter_price'],
+        trades['position'] == 1,
+        trades['exit_price'] > trades['enter_price'],
         trades['exit_price'] < trades['enter_price']
     )
 
+    # Calculate number of pips won or lost
     trades['pips'] = np.where(
         trades['position'] == 1,
         (trades['exit_price'] - trades['enter_price']) / 0.0001,
         (trades['enter_price'] - trades['exit_price']) / 0.0001
     )
 
-    if stop_pips:
-        # Calculate stop price from stop_pips
-        trades['stop_price'] = np.where(
-            trades['position'] == 1,
-            trades['enter_price'] - (0.0001 * stop_pips),
-            trades['enter_price'] + (0.0001 * stop_pips)
-        )
-
-        # Was the stop triggered or not
-        trades['stop_triggered'] = np.where(
-            trades['position'] == 1,
-            trades['exit_price'] < trades['stop_price'],
-            trades['exit_price'] > trades['stop_price']
-        )
-
-        # Recaulculate exit price if the stop was triggered
-        trades['exit_price'] = np.where(
-            trades['stop_triggered'] == True,
-            trades['stop_price'],
-            trades['exit_price']
-        )
-
-        # Recaulculate pips if the stop was triggered
-        trades['pips'] = np.where(
-            (trades['stop_triggered'] == True) & (trades['position'] == 1),
-            (trades['exit_price'] - trades['enter_price']) / 0.0001,
-            trades['pips']
-        )
-        trades['pips'] = np.where(
-            (trades['stop_triggered'] == True) & (trades['position'] == -1),
-            (trades['enter_price'] - trades['exit_price']) / 0.0001,
-            trades['pips']
-        )
+    # Drop in_trade_price_max and in_trade_price_min as these are not required
+    trades.drop('in_trade_price_max', 1, inplace=True)
+    trades.drop('in_trade_price_min', 1, inplace=True)
 
     return trades
