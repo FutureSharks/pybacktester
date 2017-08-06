@@ -114,8 +114,8 @@ __pycache__
 !fx_data/data/sentdex/2013/GBPUSD-2013-05-01.csv
 
 strategies/*
-!strategies/strategy1.py
+!strategies/ma_bandwidth.py
+!strategies/ema_crossover.py
 !strategies/README.md
 
-OANDA.md
 README2.md

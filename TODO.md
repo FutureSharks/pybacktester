@@ -1,7 +1,6 @@
 # To do
 
-- Time based rolling average as opposed to row based
-- How to measure volatility and how does it affect results?
-- Verify again with small amount of data to be sure it works
+- Try time based rolling average as opposed to row based
+- How to measure volatility and how does it affect strategy performance?
+- Verify again with small amount of data to be sure everything is correct
 - Vectorise `simulate_trades`
-- Use EMA

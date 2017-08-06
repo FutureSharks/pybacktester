@@ -11,12 +11,12 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import pybacktester
 import fx_data
-from strategies import strategy1 as strategy
+from strategies import ma_bandwidth as strategy
 
 # Get price data
 price_data = fx_data.get(provider='sentdex', year='2013', month='05', day='01')
 # Generate positions from the strategy
-positions = strategy.apply(price_data.copy(), moving_average=25, ma_bandwidth_pips=8)
+positions = strategy.apply(price_data.copy(), moving_average=25, bandwidth_pips=8)
 # Show some stats for the backtest
 stats, results = pybacktester.run_backtest(positions.copy(), 10000, 7, stop_pips=3, spread_pips=1.3)
 
