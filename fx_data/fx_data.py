@@ -38,6 +38,16 @@ def get(provider, year, month, day=None, time_group=None):
             if column in price_data.columns:
                 price_data.drop(column, 1, inplace=True)
 
+    elif provider == 'oanda':
+        filename = '{0}/oanda/{1}/oanda-GBP_USD-{1}-{2}.csv'.format(data_dir, year, month, day)
+        price_data = pd.read_csv(filename, index_col=0)
+        price_data.index.name = 'date'
+        price_data.rename(columns={'c': 'close', 'h': 'high', 'l': 'low', 'o': 'open'}, inplace=True)
+        price_data.index = pd.to_datetime(price_data.index)
+        price_data['price'] = (price_data['open'] + price_data['close']) / 2
+        # Remove duplicate index rows
+        price_data = price_data[~price_data.index.duplicated(keep='first')]
+
     else:
         raise Exception
 
