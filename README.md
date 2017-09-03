@@ -18,7 +18,7 @@ price_data = fx_data.get(provider='sentdex', year='2013', month='05', day='01')
 # Generate positions from the strategy
 positions = strategy.apply(price_data.copy(), moving_average=25, bandwidth_pips=8)
 # Show some stats for the backtest
-stats, results = pybacktester.run_backtest(positions.copy(), 10000, 7, stop_pips=3, spread_pips=1.3)
+stats, results, trades = pybacktester.run_backtest(positions.copy(), 10000, 7, stop_pips=3, spread_pips=1.3)
 
 print(stats)
 {
@@ -34,11 +34,9 @@ print(stats)
   'return_percent': 116.44
 }
 
-# Generate trades from the position data
-trades = pybacktester.generate_trades(positions.copy(), stop_pips=3, spread_pips=1.3)
 # Show a graph on price and positions in colour
 graph = pybacktester.plot_trades(positions.copy(), trades.copy())
-plt.show()
+plt.show(block=False)
 # See below for graph
 ```
 
