@@ -8,7 +8,7 @@ basepath = os.path.dirname(__file__)
 data_dir = os.path.abspath(os.path.join(basepath, 'data'))
 
 
-def get(provider, year, month, day=None, time_group=None):
+def get(provider, year, month, day=None, time_group=None, instrument=None):
     if day:
         day = "-{0}".format(day)
     else:
@@ -39,7 +39,7 @@ def get(provider, year, month, day=None, time_group=None):
                 price_data.drop(column, 1, inplace=True)
 
     elif provider == 'oanda':
-        filename = '{0}/oanda/{1}/oanda-GBP_USD-{1}-{2}.csv'.format(data_dir, year, month, day)
+        filename = '{0}/oanda/{1}/{2}/oanda-{1}-{2}-{3}.csv'.format(data_dir, instrument, year, month, day)
         price_data = pd.read_csv(filename, index_col=0)
         price_data.index.name = 'date'
         price_data.rename(columns={'c': 'close', 'h': 'high', 'l': 'low', 'o': 'open'}, inplace=True)
