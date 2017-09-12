@@ -108,11 +108,13 @@ __pycache__
 *.csv
 
 # Custom items below
+!fx_data/data/oanda/README.md
 
 /fx_data/data/*/*/*
+/fx_data/data/*/*/*/*
 !fx_data/data/truefx/2015/GBPUSD-2015-01-01.csv
 !fx_data/data/sentdex/2013/GBPUSD-2013-05-01.csv
-!fx_data/data/oanda/2017/oanda-GBP_USD-2017-1.csv
+!fx_data/data/oanda/GBP_USD/2017/oanda-GBP_USD-2017-1.csv
 !fx_data/data/oanda/README.md
 
 strategies/*
@@ -121,3 +123,5 @@ strategies/*
 !strategies/README.md
 
 README2.md
+
+docs
