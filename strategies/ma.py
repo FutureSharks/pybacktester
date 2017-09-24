@@ -4,9 +4,9 @@ import pandas as pd
 import numpy as np
 
 
-def apply(price_data, moving_average, bandwidth_pips):
+def apply(price_data, moving_average, bandwidth_pips=0):
     '''
-    Moving average band strategy
+    Moving average with a band
     '''
     price_data['ma'] = price_data['price'].rolling(window=moving_average, center=False).mean()
     price_data['ma_high'] = price_data['ma'] + (0.0001 * bandwidth_pips)

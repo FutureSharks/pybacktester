@@ -27,4 +27,7 @@ def plot_trades(price_data, trades):
         exit_loc = price_data.loc[price_data.index == short_position['exit_date']].index[0]
         ax.fill_between([enter_loc, exit_loc], ymin, ymax, color='#ff8282')
 
+    ax.annotate('PROFITABLE', (0,0), (0, -60), xycoords='axes fraction', textcoords='offset points', va='top', size="large", color='#82ff90')
+    ax.annotate('NONPROFITABLE', (0,0), (100, -60), xycoords='axes fraction', textcoords='offset points', va='top', size="large", color='#ff8282')
+
     return ax

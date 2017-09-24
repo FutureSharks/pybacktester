@@ -19,8 +19,8 @@ def generate_trades(price_data, spread_pips, stop_pips, slippage_pips):
 
     # Create trades DataFrame
     trades = pd.DataFrame({
-            'enter_date' : price_data.reset_index().groupby('position_group').date.first(),
-            'enter_price' : price_data.reset_index().groupby('position_group')['price'].first() + (
+            'enter_date': price_data.reset_index().groupby('position_group').date.first(),
+            'enter_price': price_data.reset_index().groupby('position_group')['price'].first() + (
                 price_data.groupby('position_group').position.first() * (
                     # Add spread
                     (0.0001 * (spread_pips / 2)) +
@@ -28,10 +28,10 @@ def generate_trades(price_data, spread_pips, stop_pips, slippage_pips):
                     (0.0001 * slippage_pips)
                 )
             ),
-            'in_trade_price_min' : price_data.reset_index().groupby('position_group')['price'].min(),
-            'in_trade_price_max' : price_data.reset_index().groupby('position_group')['price'].max(),
-            'exit_date' : price_data.reset_index().groupby('position_group_day_after').date.last(),
-            'exit_price' : price_data.reset_index().groupby('position_group_day_after')['price'].last() - (
+            'in_trade_price_min': price_data.reset_index().groupby('position_group')['price'].min(),
+            'in_trade_price_max': price_data.reset_index().groupby('position_group')['price'].max(),
+            'exit_date': price_data.reset_index().groupby('position_group_day_after').date.last(),
+            'exit_price': price_data.reset_index().groupby('position_group_day_after')['price'].last() - (
                 price_data.groupby('position_group').position.first() * (
                     # Add spread
                     (0.0001 * (spread_pips / 2)) +
@@ -39,8 +39,8 @@ def generate_trades(price_data, spread_pips, stop_pips, slippage_pips):
                     (0.0001 * slippage_pips)
                 )
             ),
-            'position_length' : price_data.groupby('position_group').size(),
-            'position' : price_data.groupby('position_group').position.first()
+            'position_length': price_data.groupby('position_group').size(),
+            'position': price_data.groupby('position_group').position.first()
         }).reset_index(drop=True)
 
     # Remove trades with neutral position

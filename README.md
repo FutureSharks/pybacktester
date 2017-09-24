@@ -4,40 +4,58 @@
 
 A simple python3 vector based trade backtesting tool.
 
-## Example
+Here is an example Jupyter Notebook using a common triple moving average strategy:
+
+[triple_ema_crossover.ipynb](triple_ema_crossover.ipynb)
+
+### Example
+
+#### Generating positions
 
 ```python
 import matplotlib.pyplot as plt
 import pandas as pd
 import pybacktester
 import fx_data
-from strategies import ma_bandwidth as strategy
+
+# Import a strategy to backtest
+from strategies import triple_ema_crossover as strategy
 
 # Get price data
-price_data = fx_data.get(provider='sentdex', year='2013', month='05', day='01')
+price_data = fx_data.get(provider='oanda', instrument='GBP_USD', year=2011, month=1, time_group='60min')
 # Generate positions from the strategy
-positions = strategy.apply(price_data.copy(), moving_average=25, bandwidth_pips=8)
-# Show some stats for the backtest
-stats, results, trades = pybacktester.run_backtest(positions.copy(), 10000, 7, stop_pips=3, spread_pips=1.3)
-
-print(stats)
-{
-  'position_percentage': 7,
-  'win_loss_ratio': 0.5,
-  'end_portfolio_value': 21644.0,
-  'start_portfolio_value': 10000,
-  'portfolio_lowest_value': 14481.0,
-  'trades': 4,
-  'total_pips': 17.60000000000206,
-  'pips_per_trade': 4.400000000000515,
-  'median_position_length': 11.0,
-  'return_percent': 116.44
-}
-
-# Show a graph on price and positions in colour
-graph = pybacktester.plot_trades(positions.copy(), trades.copy())
-plt.show(block=False)
-# See below for graph
+positions = strategy.apply(price_data.copy(), slow_ema=18, medium_ema=9, fast_ema=4)
+# Show positions on a graph
+position_graph = pybacktester.plot_positions(positions.copy())
+plt.show()
 ```
 
-![back-test-img2](../master/img/graph_example.png?raw=true)
+![back-test-img2](../master/img/position_plot.png?raw=true)
+
+
+#### Run a backtest
+
+```python
+stats, results, trades = pybacktester.run_backtest(positions.copy(), 10000, 2, stop_pips=3, spread_pips=1.3)
+
+# Show some stats for the backtest
+print(stats)
+{
+  'end_portfolio_value': 56045576.0,
+  'median_position_length': 8.0,
+  'pips_per_trade': 17.647611636962043,
+  'portfolio_lowest_value': 31142.0,
+  'position_percentage': 2,
+  'return_percent': 560355.76000000001,
+  'start_portfolio_value': 10000,
+  'total_pips': 829.43774693721605,
+  'trades': 47,
+  'win_loss_ratio': 0.31914893617021278
+}
+
+# Plot of trades showing trade outcome in colour
+graph = pybacktester.plot_trades(positions.copy(), trades.copy())
+plt.show()
+```
+
+![back-test-img2](../master/img/trade_plot.png?raw=true)

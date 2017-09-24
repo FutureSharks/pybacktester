@@ -4,13 +4,13 @@ import pandas as pd
 import numpy as np
 
 
-def apply(price_data, slow_ma, fast_ma, bandwidth_pips):
+def apply(price_data, slow_ma, fast_ma, bandwidth_pips=0):
     '''
-    EMA crossover with bandwidth to reduce false signals
+    Dual MA crossover with optional band
     '''
     # Create fast and slow EMAs
-    price_data['slow_ma'] = price_data['price'].ewm(min_periods=slow_ma, span=slow_ma).mean()
-    price_data['fast_ma'] = price_data['price'].ewm(min_periods=fast_ma, span=fast_ma).mean()
+    price_data['slow_ma'] = price_data['price'].rolling(window=slow_ma, center=False).mean()
+    price_data['fast_ma'] = price_data['price'].rolling(window=fast_ma, center=False).mean()
 
     # Create band around slow MA
     price_data['slow_ma_high'] = price_data['slow_ma'] + (0.0001 * bandwidth_pips)

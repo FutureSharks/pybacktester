@@ -118,8 +118,10 @@ __pycache__
 !fx_data/data/oanda/README.md
 
 strategies/*
-!strategies/ma_bandwidth.py
-!strategies/ema_crossover.py
+!strategies/ma.py
+!strategies/ma_crossover.py
+!strategies/triple_ema_crossover.py
+!strategies/bollinger_bands.py
 !strategies/README.md
 
 README2.md

@@ -4,6 +4,7 @@
 import pandas as pd
 import numpy as np
 import itertools
+import gc
 
 from .generate_trades import generate_trades
 from .simulate_trades import simulate_trades
@@ -20,7 +21,7 @@ def run_backtest(price_data, portfolio_value, position_percentage, stop_pips, sp
 
     if len(trades) == 0:
         print('no trades generated')
-        return (None, None)
+        return (None, None, None)
 
     trades = simulate_trades(trades, portfolio_value, position_percentage)
 
@@ -50,9 +51,9 @@ def run_backtest(price_data, portfolio_value, position_percentage, stop_pips, sp
 
 
 
-def run_backtest_matrix(strategy, month_data, strategy_settings, portfolio_value=10000, position_percentage=2, stop_pips=3, spread_pips=1.3, slippage_pips=1.6):
+def run_backtest_matrix(strategy, price_data, strategy_settings, stop_pips=3, spread_pips=1.3, slippage_pips=1.6):
     '''
-    Runs a backtest with multiple settings over multiple months and returns average of results into a combined dataframe
+    Runs a backtest with multiple settings and returns from results generated trades in a dataframe
     '''
 
     backtest_results = pd.DataFrame()
@@ -63,40 +64,39 @@ def run_backtest_matrix(strategy, month_data, strategy_settings, portfolio_value
         backtest_permutations.append(strategy_settings[setting])
 
     backtest_settings_list = list(itertools.product(*backtest_permutations))
-    number_of_permutations = len(backtest_settings_list) * len(month_data)
-    count_of_permutations = 0
+    number_of_permutations = len(backtest_settings_list)
+    permutations_done = 0
 
     print('Starting, {0} permutations to run.'.format(number_of_permutations))
 
     for backtest_setting in backtest_settings_list:
+        gc.collect()
         settings_dict = dict(zip(strategy_settings_keys, backtest_setting))
-        for month in month_data:
-            positions = strategy.apply(month.copy(), **settings_dict)
+        positions = strategy.apply(price_data.copy(), **settings_dict)
+        permutations_done += 1
 
-            if positions['position'].value_counts()[0] == len(positions):
-                continue
+        if positions['position'].value_counts()[0] == len(positions):
+            print('Skipped, no trades: {0}/{1}: {2}'.format(permutations_done, number_of_permutations, back_results_dict))
+            continue
 
-            stats, results, trades = run_backtest(
-                positions.copy(),
-                portfolio_value=portfolio_value,
-                position_percentage=position_percentage,
-                stop_pips=stop_pips,
-                spread_pips=spread_pips,
-                slippage_pips=slippage_pips
-            )
+        trades = generate_trades(positions, stop_pips=stop_pips, spread_pips=spread_pips, slippage_pips=slippage_pips)
 
-            back_results_dict = {**stats, **settings_dict}
-            back_results_dict['month'] = month.index[0].month
-            for key in back_results_dict.keys():
-                results.loc[0, key] = back_results_dict[key]
-            backtest_results = backtest_results.append(results, ignore_index=True)
+        try:
+            wins = trades['profitable'].value_counts()[1]
+        except KeyError:
+            wins = 0
 
-            count_of_permutations += 1
+        stats = {
+            'win_loss_ratio': wins / len(trades),
+            'trades': len(trades),
+            'total_pips': trades['pips'].sum(),
+            'pips_per_trade': trades['pips'].sum() / len(trades),
+            'median_position_length': trades['position_length'].median(),
+        }
 
-            print('{0}/{1}: {2}'.format(count_of_permutations, number_of_permutations, back_results_dict))
+        back_results_dict = {**stats, **settings_dict}
+        backtest_results = backtest_results.append(back_results_dict, ignore_index=True)
+        # Try del statement here
+        print('{0}/{1}: {2}'.format(permutations_done, number_of_permutations, back_results_dict))
 
-    # Create average of results for each month
-    grouped_results = backtest_results.groupby(by=strategy_settings_keys).mean()
-    grouped_results.reset_index(inplace=True)
-
-    return grouped_results
+    return backtest_results
