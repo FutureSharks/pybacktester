@@ -3,6 +3,7 @@
 
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def plot_trades(price_data, trades):
@@ -29,5 +30,7 @@ def plot_trades(price_data, trades):
 
     ax.annotate('PROFITABLE', (0,0), (0, -60), xycoords='axes fraction', textcoords='offset points', va='top', size="large", color='#82ff90')
     ax.annotate('NONPROFITABLE', (0,0), (100, -60), xycoords='axes fraction', textcoords='offset points', va='top', size="large", color='#ff8282')
+
+    plt.title('Trades', size='x-large')
 
     return ax

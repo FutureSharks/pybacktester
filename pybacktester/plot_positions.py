@@ -23,7 +23,7 @@ def plot_positions(positions, columns_to_drop = ['position_group', 'position_gro
     non_zero_positions = positions[positions.position != 0]
     position_groups = list(set(non_zero_positions['position_group'].tolist()))
 
-    print('{0} trades to plot...'.format(len(position_groups)))
+    print('{0} positions to plot...'.format(len(position_groups)))
 
     for group in position_groups:
         enter_loc = non_zero_positions.loc[non_zero_positions['position_group'] == group].index[0]
@@ -38,5 +38,7 @@ def plot_positions(positions, columns_to_drop = ['position_group', 'position_gro
         ax.fill_between([enter_loc, exit_loc], ymin, ymax, color=color)
         ax.annotate('LONG', (0,0), (0, -60), xycoords='axes fraction', textcoords='offset points', va='top', size="large", color='#72a8ff')
         ax.annotate('SHORT', (0,0), (80, -60), xycoords='axes fraction', textcoords='offset points', va='top', size="large", color='#ff9e9e')
+
+    plt.title('Positions', size='x-large')
 
     return ax

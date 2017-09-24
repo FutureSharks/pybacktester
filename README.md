@@ -36,7 +36,13 @@ plt.show()
 #### Run a backtest
 
 ```python
-stats, results, trades = pybacktester.run_backtest(positions.copy(), 10000, 2, stop_pips=3, spread_pips=1.3)
+stats, results, trades = pybacktester.run_backtest(
+  positions.copy(),
+  portfolio_value=10000,
+  position_percentage=2,
+  stop_pips=3,
+  spread_pips=1.3
+)
 
 # Show some stats for the backtest
 print(stats)
