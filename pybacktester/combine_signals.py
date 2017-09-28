@@ -23,4 +23,7 @@ def combine_signals(trade_signals, trade_signals_confirmation):
     combined_position['position_group'] = (combined_position['position'].diff(1) != 0).astype('int').cumsum()
     combined_position['position_group_day_after'] = combined_position['position_group'].shift(1)
 
+    for column in ['position_signal', 'position_confirmation']:
+        combined_position.drop(column, 1, inplace=True)
+
     return combined_position

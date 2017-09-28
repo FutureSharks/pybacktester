@@ -9,7 +9,7 @@ from pybacktester import get_oanda_prices
 instrument = 'GBP_USD'
 
 for year in range(2005, 2018):
-    for month in range(1, 12):
+    for month in range(1, 13):
         get_oanda_prices(
             csv_file='fx_data/data/oanda/{0}/{1}/oanda-{0}-{1}-{2}.csv'.format(
                 instrument,

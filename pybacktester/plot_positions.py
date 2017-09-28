@@ -6,14 +6,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def plot_positions(positions, columns_to_drop = ['position_group', 'position_group_day_after', 'position', 'volume']):
+def plot_positions(positions, columns_to_keep = []):
     '''
     Creates a plot of the price with coloured bands to show the position
     '''
+    # Create position groups
+    positions['position_group'] = (positions['position'].diff(1) != 0).astype('int').cumsum()
+    positions['position_group_day_after'] = positions['position_group'].shift(1)
+
     positions_to_plot = positions.copy()
 
     for column in positions_to_plot.columns:
-        if column in columns_to_drop:
+        if column != 'price' and column not in columns_to_keep:
             positions_to_plot.drop(column, 1, inplace=True)
 
     ax = positions_to_plot.plot()

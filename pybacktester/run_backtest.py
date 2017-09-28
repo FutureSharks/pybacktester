@@ -8,50 +8,40 @@ import gc
 
 from .generate_trades import generate_trades
 from .simulate_trades import simulate_trades
+from .get_backtest_statistics import get_backtest_statistics
 
 
-def run_backtest(price_data, portfolio_value, position_percentage, stop_pips, spread_pips, slippage_pips=0.0):
+def run_backtest(position_data, portfolio_value, position_percentage, stop_pips, spread_pips, slippage_pips=0.0):
     '''
     Takes price data with position column, runs backtest and returns dictionary
     of stats, results dataframe and trades dataframe
     '''
     begin_portfolio_value = portfolio_value
 
-    trades = generate_trades(price_data, stop_pips=stop_pips, spread_pips=spread_pips, slippage_pips=slippage_pips)
+    trades = generate_trades(position_data, stop_pips=stop_pips, spread_pips=spread_pips, slippage_pips=slippage_pips)
 
     if len(trades) == 0:
         print('no trades generated')
         return (None, None, None)
 
-    trades = simulate_trades(trades, portfolio_value, position_percentage)
+    simulated_trades = simulate_trades(trades, portfolio_value, position_percentage)
 
     try:
-        wins = trades['profitable'].value_counts()[1]
+        wins = simulated_trades['profitable'].value_counts()[1]
     except KeyError:
         wins = 0
 
-    stats = {
-        'position_percentage': position_percentage,
-        'win_loss_ratio': wins / len(trades),
-        'end_portfolio_value': round(trades['portfolio_value'].tail(1).values[0]),
-        'start_portfolio_value': begin_portfolio_value,
-        'portfolio_lowest_value': round(trades['portfolio_value'].min()),
-        'trades': len(trades),
-        'total_pips': trades['pips'].sum(),
-        'pips_per_trade': trades['pips'].sum() / len(trades),
-        'median_position_length': trades['position_length'].median(),
-        'return_percent': round(((trades['portfolio_value'].tail(1).values[0] / begin_portfolio_value) - 1 ) * 100, 2)
-    }
+    stats = get_backtest_statistics(simulated_trades)
 
     columns = stats.keys()
     results = pd.DataFrame(columns=columns)
     results = results.append(stats, ignore_index=True)
 
-    return (stats, results, trades)
+    return (stats, results, simulated_trades)
 
 
 
-def run_backtest_matrix(strategy, price_data, strategy_settings, stop_pips=3, spread_pips=1.3, slippage_pips=1.6):
+def run_backtest_matrix(strategy, position_data, strategy_settings, stop_pips=3, spread_pips=1.3, slippage_pips=1.6):
     '''
     Runs a backtest with multiple settings and returns from results generated trades in a dataframe
     '''
@@ -72,7 +62,7 @@ def run_backtest_matrix(strategy, price_data, strategy_settings, stop_pips=3, sp
     for backtest_setting in backtest_settings_list:
         gc.collect()
         settings_dict = dict(zip(strategy_settings_keys, backtest_setting))
-        positions = strategy.apply(price_data.copy(), **settings_dict)
+        positions = strategy.apply(position_data.copy(), **settings_dict)
         permutations_done += 1
 
         if positions['position'].value_counts()[0] == len(positions):

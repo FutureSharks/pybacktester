@@ -67,7 +67,7 @@ def generate_trades(price_data, spread_pips, stop_pips, slippage_pips):
         trades['exit_price']
     )
 
-    # Was each trade profitable
+    # Was trade profitable
     trades['profitable'] = np.where(
         trades['position'] == 1,
         trades['exit_price'] > trades['enter_price'],
