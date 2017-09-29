@@ -9,3 +9,4 @@ from .simulate_trades import simulate_trades
 from .combine_signals import combine_signals
 from .get_oanda_prices import get_oanda_prices
 from .get_backtest_statistics import get_backtest_statistics
+from .run_monte_carlo import run_monte_carlo

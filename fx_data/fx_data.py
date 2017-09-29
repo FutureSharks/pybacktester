@@ -62,10 +62,10 @@ def get(provider, year, month, day=None, time_group=None, instrument=None):
     return price_data
 
 
-def get_all(provider, instrument, time_group=None):
+def get_all(provider, instrument, year='*', time_group=None):
     if provider == 'oanda':
         price_data = pd.DataFrame()
-        csv_files = glob.glob('{0}/oanda/{1}/*/*.csv'.format(data_dir, instrument))
+        csv_files = glob.glob('{0}/oanda/{1}/{2}/*.csv'.format(data_dir, instrument, year))
         for csv_file in csv_files:
             price_data = price_data.append(pd.read_csv(csv_file, index_col=0))
         price_data.index.name = 'date'

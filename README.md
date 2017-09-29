@@ -47,16 +47,22 @@ stats, results, trades = pybacktester.run_backtest(
 # Show some stats for the backtest
 print(stats)
 {
-  'end_portfolio_value': 56045576.0,
-  'median_position_length': 8.0,
-  'pips_per_trade': 17.647611636962043,
-  'portfolio_lowest_value': 31142.0,
-  'position_percentage': 2,
-  'return_percent': 560355.76000000001,
-  'start_portfolio_value': 10000,
-  'total_pips': 829.43774693721605,
+  'win_loss_ratio': 0.46875,
+  'start_portfolio_value': 10000.0,
+  'end_portfolio_value': 56045576.016318738,
+  'portfolio_lowest_value': 10000.0,
   'trades': 47,
-  'win_loss_ratio': 0.31914893617021278
+  'total_pips': 829.43774693721605,
+  'pips_per_win_trade': 61.527153115233268,
+  'pips_per_loss_trade': -2.9209234309775929,
+  'drawdown_percent_max': 33.048933752098037,
+  'drawdown_percent_median': 11.639999999998757,
+  'drawdown_percent_95th': 29.507298956442686,
+  'win_percent_median': 90.35745762713265,
+  'win_length_median': 20.0,
+  'loss_length_median': 4.0,
+  'return_percent': 560455.7601631874,
+  'profit_factor': 8.4076426982340262
 }
 
 # Plot of trades showing trade outcome in colour
