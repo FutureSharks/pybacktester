@@ -71,3 +71,24 @@ plt.show()
 ```
 
 ![back-test-img2](../master/img/trade_plot.png?raw=true)
+
+
+#### Run Monte Carlo simulation
+
+```python
+monte_carlo_results = pybacktester.run_monte_carlo(
+    trades.copy(),
+    runs=1000,
+    portfolio_value=10000,
+    position_percentage=2
+)
+
+print(monte_carlo_results)
+
+{
+  'mc_median_drawdown_percent_median': 11.639999999998762,
+  'mc_median_drawdown_percent_max': 37.06599772697169,
+  'mc_median_drawdown_percent_95th': 32.24627226242184,
+  'mc_median_profit_factor': 4.448013213555316
+}
+```

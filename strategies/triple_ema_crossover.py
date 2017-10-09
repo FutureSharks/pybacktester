@@ -6,7 +6,7 @@ import numpy as np
 
 def apply(price_data, slow_ema=50, medium_ema=25, fast_ema=10):
     '''
-    Tripple EMA crossover
+    Triple EMA crossover
     '''
     # Create fast and slow MAs
     price_data['slow_ema'] = price_data['price'].ewm(span=slow_ema, adjust=False).mean()

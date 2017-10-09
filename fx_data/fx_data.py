@@ -77,4 +77,6 @@ def get_all(provider, instrument, year='*', time_group=None):
     if time_group:
         price_data = price_data.groupby(pd.TimeGrouper(freq=time_group)).mean()
 
+    price_data = price_data.dropna(subset=['price'])
+
     return price_data

@@ -21,6 +21,8 @@ ENV/
 *.zip
 *.csv
 
+jupyter-notebooks/*
+
 !fx_data/data/oanda/README.md
 
 /fx_data/data/*/*/*
