@@ -48,7 +48,7 @@ def get_backtest_statistics(trades):
 
     # Create the statistics dictionary
     statistics = {
-        'win_loss_ratio': len(wins) / max(len(losses), 1),
+        'win_loss_ratio': len(wins) / len(trades),
         'trades': len(trades),
         'trades_per_day': len(trades) / trading_days,
         'total_pips': trades['pips'].sum(),
@@ -63,7 +63,7 @@ def get_backtest_statistics(trades):
         ext_stats = {
             'start_portfolio_value': start_portfolio_value,
             'end_portfolio_value': end_portfolio_value,
-            'return_percent': end_portfolio_value / start_portfolio_value * 100,
+            'return_percent': (end_portfolio_value - start_portfolio_value) / start_portfolio_value * 100,
             'portfolio_lowest_value': min([trades['portfolio_value_after'].min(), trades['portfolio_value_before'].min()]),
             'win_percent_median': wins['profit_percent'].median(),
             'drawdown_percent_max': draw_downs['loss_percent'].max(),

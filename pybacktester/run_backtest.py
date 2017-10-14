@@ -11,7 +11,7 @@ from .simulate_trades import simulate_trades
 from .get_backtest_statistics import get_backtest_statistics
 
 
-def run_backtest(position_data, portfolio_value, position_percentage, stop_pips, spread_pips, slippage_pips=0.0):
+def run_backtest(position_data, portfolio_value, risk_percentage, stop_pips, spread_pips, slippage_pips=0.0):
     '''
     Takes price data with position column, runs backtest and returns dictionary
     of stats, results dataframe and trades dataframe
@@ -24,7 +24,7 @@ def run_backtest(position_data, portfolio_value, position_percentage, stop_pips,
         print('no trades generated')
         return (None, None, None)
 
-    simulated_trades = simulate_trades(trades, portfolio_value, position_percentage)
+    simulated_trades = simulate_trades(trades, portfolio_value, risk_percentage)
 
     try:
         wins = simulated_trades['profitable'].value_counts()[1]

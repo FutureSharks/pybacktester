@@ -22,6 +22,7 @@ ENV/
 *.csv
 
 jupyter-notebooks/*
+!jupyter-notebooks/triple_ema_crossover.ipynb
 
 !fx_data/data/oanda/README.md
 

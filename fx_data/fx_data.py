@@ -75,7 +75,15 @@ def get_all(provider, instrument, year='*', time_group=None):
         price_data = price_data[~price_data.index.duplicated(keep='first')]
 
     if time_group:
-        price_data = price_data.groupby(pd.TimeGrouper(freq=time_group)).mean()
+        grouped_data = pd.DataFrame({
+            'close': price_data.groupby(pd.TimeGrouper(freq=time_group)).close.mean(),
+            'high': price_data.groupby(pd.TimeGrouper(freq=time_group)).high.max(),
+            'low': price_data.groupby(pd.TimeGrouper(freq=time_group)).low.min(),
+            'open': price_data.groupby(pd.TimeGrouper(freq=time_group)).open.mean(),
+            'volume': price_data.groupby(pd.TimeGrouper(freq=time_group)).volume.sum(),
+            'price': price_data.groupby(pd.TimeGrouper(freq=time_group)).price.mean(),
+        })
+        price_data = grouped_data
 
     price_data = price_data.dropna(subset=['price'])
 

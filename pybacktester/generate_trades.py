@@ -28,8 +28,8 @@ def generate_trades(price_data, spread_pips, stop_pips, slippage_pips):
                     (0.0001 * slippage_pips)
                 )
             ),
-            'in_trade_price_min': price_data.reset_index().groupby('position_group')['price'].min(),
-            'in_trade_price_max': price_data.reset_index().groupby('position_group')['price'].max(),
+            'in_trade_price_min': price_data.reset_index().groupby('position_group')['low'].min(),
+            'in_trade_price_max': price_data.reset_index().groupby('position_group')['high'].max(),
             'exit_date': price_data.reset_index().groupby('position_group_day_after').date.last(),
             'exit_price': price_data.reset_index().groupby('position_group_day_after')['price'].last() - (
                 price_data.groupby('position_group').position.first() * (
@@ -80,9 +80,5 @@ def generate_trades(price_data, spread_pips, stop_pips, slippage_pips):
         (trades['exit_price'] - trades['enter_price']) / 0.0001,
         (trades['enter_price'] - trades['exit_price']) / 0.0001
     )
-
-    # Drop in_trade_price_max and in_trade_price_min as these are not required
-    trades.drop('in_trade_price_max', 1, inplace=True)
-    trades.drop('in_trade_price_min', 1, inplace=True)
 
     return trades

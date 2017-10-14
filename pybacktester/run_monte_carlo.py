@@ -9,7 +9,7 @@ from .get_backtest_statistics import get_backtest_statistics
 from .simulate_trades import simulate_trades
 
 
-def run_monte_carlo(trades, runs=1000, portfolio_value=10000, position_percentage=1, verbose=True):
+def run_monte_carlo(trades, runs=1000, portfolio_value=10000, risk_percentage=1, verbose=True):
     '''
     Takes a list of trades in a dataframe and randomly reorders them and collects statistics.
     This is run repeatedly and aggregate statistics are returned.
@@ -29,7 +29,7 @@ def run_monte_carlo(trades, runs=1000, portfolio_value=10000, position_percentag
         trades.reset_index(drop=True, inplace=True)
 
         # Run simulation
-        trades = simulate_trades(trades.copy(), portfolio_value=portfolio_value, position_percentage=position_percentage)
+        trades = simulate_trades(trades.copy(), portfolio_value=portfolio_value, risk_percentage=risk_percentage)
 
         # Get statistics
         stats = get_backtest_statistics(trades)
