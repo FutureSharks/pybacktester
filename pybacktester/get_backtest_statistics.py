@@ -70,6 +70,7 @@ def get_backtest_statistics(trades):
             'drawdown_percent_median': draw_downs['loss_percent'].median(),
             'drawdown_percent_95th': draw_downs['loss_percent'].quantile(0.95),
             'profit_factor': wins['profit'].sum() / max((losses['profit'].sum() * -1), 1),
+            'expectancy': trades['expectancy_pl'].sum() / len(trades),
         }
         statistics = {**statistics, **ext_stats }
 
