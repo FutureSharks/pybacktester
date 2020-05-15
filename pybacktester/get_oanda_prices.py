@@ -78,6 +78,7 @@ def create_candles_df(prices):
     # Deduplicate
     price_data.sort_index(inplace=True)
     price_data = price_data[~price_data.index.duplicated(keep='first')]
+    price_data = price_data[['close', 'high', 'low', 'open', 'volume']]
 
     return price_data
 
