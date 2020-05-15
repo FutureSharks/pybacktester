@@ -87,9 +87,29 @@ def get_oanda_prices(csv_file, instrument, year, month):
     Gets a month of historical candle prices from the Oanda API and saves them as CSV files
 
     Example:
+    
+    $ export oanda_access_token="xxxx"
 
     from pybacktester import get_oanda_prices
     get_oanda_prices(csv_file='GBP_USD-2014-05.csv', instrument='GBP_USD', year=2014, month=5)
+
+
+
+
+    import get_oanda_prices
+    from pathlib import Path
+
+    instruments = ['AUD_USD', 'AUD_JPY', 'EUR_USD', 'GBP_USD', 'USD_CAD']
+
+    for instrument in instruments:
+        for year in range(2018, 2021):
+            for month in range(1, 13):
+                print('Getting {0}-{1} {2}'.format(month, year, instrument))
+                d = Path('pyfinancialdata/data/currencies/oanda/{0}/{1}'.format(instrument, year))
+                f = 'oanda-{0}-{1}-{2}.csv'.format(instrument, year, month)
+                d.mkdir(parents=True, exist_ok=True)
+                get_oanda_prices.get_oanda_prices(str(d) + '/' + f, instrument, year, month)
+
     '''
     # Account for getting candles
     oanda_account = OandaAccount(os.environ['oanda_access_token'])
@@ -107,7 +127,11 @@ def get_oanda_prices(csv_file, instrument, year, month):
     # Get the candle data
     month_candles = []
     while True:
-        candles = oanda_account.get_candles(instrument=instrument, from_time=window_start, to_time=window_end, granularity='M1')
+        try:
+            candles = oanda_account.get_candles(instrument=instrument, from_time=window_start, to_time=window_end, granularity='M1')
+        except Exception as e:
+            print('Stopping due to exception: {0}'.format(e))
+            break
         month_candles.extend(candles)
         if window_end == month_end:
             break
